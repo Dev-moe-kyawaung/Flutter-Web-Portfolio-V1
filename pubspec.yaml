@@ -1,7 +1,7 @@
-name: moekyawaung_portfolio
-description: Premium cyber neon Flutter portfolio
+name: moe_kyaw_aung_portfolio
+description: Premium cyber neon portfolio for Moe Kyaw Aung
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
