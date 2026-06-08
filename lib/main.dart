@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'theme.dart';
-import 'widgets.dart';
-import 'sections.dart';
+import 'app_theme.dart';
+import 'sections/navbar_section.dart';
+import 'sections/hero_section.dart';
+import 'sections/about_section.dart';
+import 'sections/skills_section.dart';
+import 'sections/services_section.dart';
+import 'sections/projects_section.dart';
+import 'sections/apps_section.dart';
+import 'sections/contact_section.dart';
+import 'sections/footer_section.dart';
+import 'widgets/cyber_background.dart';
 
 void main() {
   runApp(const PortfolioApp());
@@ -16,18 +23,16 @@ class PortfolioApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Moe Kyaw Aung | Portfolio',
+      title: 'Moe Kyaw Aung Portfolio',
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: AppColors.bg,
-        textTheme: GoogleFonts.interTextTheme(
-          ThemeData.dark().textTheme,
-        ),
+        scaffoldBackgroundColor: AppTheme.bg,
+        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
         colorScheme: const ColorScheme.dark(
-          primary: AppColors.cyan,
-          secondary: AppColors.pink,
-          tertiary: AppColors.yellow,
-          surface: AppColors.panel,
+          primary: AppTheme.cyan,
+          secondary: AppTheme.pink,
+          tertiary: AppTheme.yellow,
+          surface: AppTheme.panel,
         ),
       ),
       home: const PortfolioPage(),
@@ -43,35 +48,43 @@ class PortfolioPage extends StatefulWidget {
 }
 
 class _PortfolioPageState extends State<PortfolioPage> {
-  final _scrollController = ScrollController();
-  final _navKey = GlobalKey();
-  final _heroKey = GlobalKey();
-  final _aboutKey = GlobalKey();
-  final _skillsKey = GlobalKey();
-  final _servicesKey = GlobalKey();
-  final _projectsKey = GlobalKey();
-  final _appsKey = GlobalKey();
-  final _contactKey = GlobalKey();
+  final scrollController = ScrollController();
+
+  final navKey = GlobalKey();
+  final heroKey = GlobalKey();
+  final aboutKey = GlobalKey();
+  final skillsKey = GlobalKey();
+  final servicesKey = GlobalKey();
+  final projectsKey = GlobalKey();
+  final appsKey = GlobalKey();
+  final contactKey = GlobalKey();
+  final footerKey = GlobalKey();
 
   bool showTop = false;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(() {
-      final next = _scrollController.offset > 400;
+    scrollController.addListener(() {
+      final next = scrollController.offset > 400;
       if (next != showTop) setState(() => showTop = next);
     });
   }
 
-  void _scrollTo(GlobalKey key) {
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> scrollTo(GlobalKey key) async {
     final ctx = key.currentContext;
     if (ctx == null) return;
-    Scrollable.ensureVisible(
+    await Scrollable.ensureVisible(
       ctx,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 850),
       curve: Curves.easeInOutCubic,
-      alignment: 0.04,
+      alignment: 0.05,
     );
   }
 
@@ -83,47 +96,49 @@ class _PortfolioPageState extends State<PortfolioPage> {
         Scaffold(
           backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
-            controller: _scrollController,
+            controller: scrollController,
             physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
-                HomeNavbar(
-                  navKey: _navKey,
-                  onTap: _scrollTo,
-                  heroKey: _heroKey,
-                  aboutKey: _aboutKey,
-                  skillsKey: _skillsKey,
-                  servicesKey: _servicesKey,
-                  projectsKey: _projectsKey,
-                  appsKey: _appsKey,
-                  contactKey: _contactKey,
+                NavbarSection(
+                  navKey: navKey,
+                  heroKey: heroKey,
+                  aboutKey: aboutKey,
+                  skillsKey: skillsKey,
+                  servicesKey: servicesKey,
+                  projectsKey: projectsKey,
+                  appsKey: appsKey,
+                  contactKey: contactKey,
+                  onNavigate: scrollTo,
                 ),
-                HeroSection(key: _heroKey),
-                AboutSection(key: _aboutKey),
-                SkillsSection(key: _skillsKey),
-                ServicesSection(key: _servicesKey),
-                ProjectsSection(key: _projectsKey),
-                AppsSection(key: _appsKey),
-                ContactSection(key: _contactKey),
-                const SizedBox(height: 80),
+                HeroSection(key: heroKey),
+                AboutSection(key: aboutKey),
+                SkillsSection(key: skillsKey),
+                ServicesSection(key: servicesKey),
+                ProjectsSection(key: projectsKey),
+                AppsSection(key: appsKey),
+                ContactSection(key: contactKey),
+                FooterSection(key: footerKey),
+                const SizedBox(height: 90),
               ],
             ),
           ),
-          floatingActionButton: AnimatedSlide(
+        ),
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 250),
+          right: 18,
+          bottom: showTop ? 18 : -80,
+          child: AnimatedOpacity(
             duration: const Duration(milliseconds: 250),
-            offset: showTop ? Offset.zero : const Offset(0, 2),
-            child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 250),
-              opacity: showTop ? 1 : 0,
-              child: FloatingActionButton(
-                backgroundColor: AppColors.panel,
-                onPressed: () => _scrollController.animateTo(
-                  0,
-                  duration: const Duration(milliseconds: 700),
-                  curve: Curves.easeInOutCubic,
-                ),
-                child: const Icon(Icons.keyboard_arrow_up_rounded),
+            opacity: showTop ? 1 : 0,
+            child: FloatingActionButton(
+              backgroundColor: AppTheme.panel,
+              onPressed: () => scrollController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 700),
+                curve: Curves.easeInOutCubic,
               ),
+              child: const Icon(Icons.keyboard_arrow_up_rounded),
             ),
           ),
         ),
